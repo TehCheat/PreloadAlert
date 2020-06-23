@@ -286,101 +286,36 @@ namespace PreloadAlert
                 {
                     debugInformation.TickAction(() =>
                     {
-                        var memory = GameController.Memory;
-                        var pFileRoot = memory.AddressOfProcess + memory.BaseOffsets[OffsetsName.FileRoot];
-                        var count = memory.Read<int>(pFileRoot + 0x10); // check how many files are loaded
-                        var areaChangeCount = GameController.Game.AreaChangeCount;
-                        var listIterator = memory.Read<long>(pFileRoot + 0x8, 0x0);
-                        filesPtr.Clear();
-
-                        for (var i = 0; i < count; i++)
+                        try
                         {
-                            listIterator = memory.Read<long>(listIterator);
-
-                            if (listIterator == 0)
+                            var memory = GameController.Memory;
+                            FilesFromMemory filesFromMemory = new FilesFromMemory(memory);
+                            var AllFiles = filesFromMemory.GetAllFilesSync();
+                            int areaChangeCount = GameController.Game.AreaChangeCount;
+                            foreach (var file in AllFiles)
                             {
-                                //MessageBox.Show("address is null, something has gone wrong, start over");
-                                // address is null, something has gone wrong, start over
-                                break;
-                            }
-
-                            filesPtr.Add(listIterator);
-                        }
-
-                        if (Settings.ParallelParsing)
-                        {
-                            Parallel.ForEach(filesPtr, (iter, state) =>
-                            {
-                                try
+                                if (file.Value.ChangeCount == areaChangeCount)
                                 {
-                                    var fileAddr = memory.Read<long>(iter + 0x18);
+                                    var text = file.Key;
+                                    if (text.Contains('@')) text = text.Split('@')[0];
 
-                                    //some magic number
-
-                                    if (memory.Read<long>(iter + 0x10) != 0 && memory.Read<int>(fileAddr + 0x38) == areaChangeCount)
+                                    lock (_locker)
                                     {
-                                        var fileNameLen = memory.Read<int>(fileAddr + 0x18);
-                                        if (fileNameLen < 7) return;
-
-                                        var fileNamePointer = memory.Read<long>(iter + 0x10);
-
-                                        var text = RemoteMemoryObject.Cache.StringCache.Read($"{nameof(PreloadAlert)}{fileNamePointer}",
-                                            () => memory.ReadStringU(
-                                                fileNamePointer, fileNameLen * 2));
-
-                                        if (Settings.LoadOnlyMetadata && text[0] != 'M') return;
-                                        if (text.Contains('@')) text = text.Split('@')[0];
-
-                                        lock (_locker)
-                                        {
-                                            PreloadDebug.Add(text);
-                                        }
-
-                                        CheckForPreload(text);
-                                    }
-                                }
-                                catch (Exception e)
-                                {
-                                    DebugWindow.LogError($"{nameof(PreloadAlert)} -> {e}");
-                                }
-                            });
-                        }
-                        else
-                        {
-                            string text;
-
-                            foreach (var iter in filesPtr)
-                            {
-                                try
-                                {
-                                    var fileAddr = memory.Read<long>(iter + 0x18);
-
-									var fileNamePointer = memory.Read<long>(iter + 0x10);
-									if (fileNamePointer != 0 && memory.Read<int>(fileAddr + 0x38) == areaChangeCount)
-                                    {
-                                        var fileNameLen = memory.Read<int>(fileAddr + 0x18);
-                                        if (fileNameLen < 7) continue; // too short, just ignore
-
-                                        text = RemoteMemoryObject.Cache.StringCache.Read($"{nameof(PreloadAlert)}{fileNamePointer}",
-                                            () => memory.ReadStringU(
-                                                fileNamePointer, fileNameLen * 2));
-
-                                        if (Settings.LoadOnlyMetadata && text[0] != 'M') continue;
-                                        if (text.Contains('@')) text = text.Split('@')[0];
                                         PreloadDebug.Add(text);
-                                        CheckForPreload(text);
                                     }
-                                }
-                                catch (Exception e)
-                                {
-                                    DebugWindow.LogError($"{nameof(PreloadAlert)} -> {e}");
+
+                                    CheckForPreload(text);
                                 }
                             }
+                        }
+                        catch (Exception e)
+                        {
+                            DebugWindow.LogError($"{nameof(PreloadAlert)} -> {e}");
                         }
 
                         lock (_locker)
                         {
-                            DrawAlers = alerts.OrderBy(x => x.Value.Text).Select(x => x.Value).ToList();
+                            DrawAlerts = alerts.OrderBy(x => x.Value.Text).Select(x => x.Value).ToList();
                         }
                     });
 
