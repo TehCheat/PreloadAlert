@@ -35,12 +35,9 @@ namespace PreloadAlert
         private bool essencefound;
         private readonly List<long> filesPtr = new List<long>();
         private bool foundSpecificPerandusChest;
-        private bool holdKey = false;
-        private bool isAreaChanged = false;
         private bool isLoading;
         private Vector2 lastLine;
         private float maxWidth;
-        private Dictionary<string, PreloadConfigLine> personalAlertStrings;
         private readonly List<string> PreloadDebug = new List<string>();
         private Action PreloadDebugAction;
         private bool working;
