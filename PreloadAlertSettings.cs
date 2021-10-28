@@ -1,3 +1,4 @@
+using ExileCore.Shared.Attributes;
 using ExileCore.Shared.Interfaces;
 using ExileCore.Shared.Nodes;
 using SharpDX;
@@ -129,6 +130,7 @@ namespace PreloadAlert
         public ToggleNode ShowInHideout { get; set; }
         public ToggleNode ParallelParsing { get; set; } = new ToggleNode(true);
         public ToggleNode LoadOnlyMetadata { get; set; } = new ToggleNode(true);
+        public RangeNode<int> DrawXOffset { get; set; } = new RangeNode<int>(0, -150, 150);
         public ColorNode CadiroTrader { get; set; }
         public ToggleNode Essence { get; set; }
         public ColorNode RemnantOfCorruption { get; set; }

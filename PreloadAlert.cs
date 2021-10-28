@@ -367,7 +367,9 @@ namespace PreloadAlert
         {
             PreloadDebugAction?.Invoke();
             if (!canRender) return;
-            var startDrawPoint = GameController.LeftPanel.StartDrawPoint;
+            var startDrawPoint = GameController.LeftPanel.StartDrawPoint.Translate(
+                -GameController.IngameState.IngameUi.MapSideUI.Width, 0).Translate(
+                (float)Settings.DrawXOffset.Value, 0.0f);
             var f = startDrawPoint.Y;
             maxWidth = 0;
 
@@ -389,7 +391,9 @@ namespace PreloadAlert
                 }
             }
 
-            var bounds = new RectangleF(GameController.LeftPanel.StartDrawPoint.X - maxWidth - 55,
+            var bounds = new RectangleF(GameController.LeftPanel.StartDrawPoint.Translate(
+                -GameController.IngameState.IngameUi.MapSideUI.Width, 0).Translate(
+                (float)Settings.DrawXOffset.Value, 0.0f).X - maxWidth - 55,
                 GameController.LeftPanel.StartDrawPoint.Y, maxWidth + 60, startDrawPoint.Y - f);
 
             Graphics.DrawImage("preload-new.png", bounds, Settings.BackgroundColor);
