@@ -26,6 +26,7 @@ namespace PreloadAlert
         public static Dictionary<string, PreloadConfigLine> Strongboxes;
         public static Dictionary<string, PreloadConfigLine> Preload;
         public static Dictionary<string, PreloadConfigLine> Bestiary;
+        public static Dictionary<string, PreloadConfigLine> ExpeditionLeague;
         public static Color AreaNameColor;
         private readonly object _locker = new object();
         private Dictionary<string, PreloadConfigLine> alertStrings;
@@ -664,6 +665,26 @@ namespace PreloadAlert
                     new PreloadConfigLine {Text = "Malachai Strongbox", FastColor = () => Settings.MalachaiStrongbox}
                 }
             };
+            
+            ExpeditionLeague = new Dictionary<string, PreloadConfigLine>
+            {
+                {
+                    "Metadata/Monsters/LeagueExpedition/NPC/ExpeditionTujen",
+                    new PreloadConfigLine {Text = "Tujen, The Haggler", FastColor = () => Settings.ExpeditionTujen}
+                },
+                {
+                    "Metadata/Monsters/LeagueExpedition/NPC/ExpeditionDannig",
+                    new PreloadConfigLine {Text = "Dannig, Warrior Skald", FastColor = () => Settings.ExpeditionDannig}
+                },
+                {
+                    "Metadata/Monsters/LeagueExpedition/NPC/ExpeditionRog; ",
+                    new PreloadConfigLine {Text = "Rog, The Dealer", FastColor = () => Settings.ExpeditionRog}
+                },
+                {
+                    "Metadata/Monsters/LeagueExpedition/NPC/ExpeditionGwennen_",
+                    new PreloadConfigLine {Text = "Gwennen, The Gambler", FastColor = () => Settings.ExpeditionGwennen}
+                }
+            };
 
             Preload = new Dictionary<string, PreloadConfigLine>
             {
@@ -899,6 +920,19 @@ namespace PreloadAlert
                 lock (_locker)
                 {
                     alerts[alert.Text] = alert;
+                }
+            }
+            
+            if (Settings.Expedition)
+            {
+                var expedition_alert = ExpeditionLeague.Where(kv => text.StartsWith(kv.Key, StringComparison.OrdinalIgnoreCase)).Select(kv => kv.Value)
+                    .FirstOrDefault();
+
+                if (expedition_alert == null) return;
+                
+                lock (_locker)
+                {
+                    alerts[expedition_alert.Text] = expedition_alert;
                 }
             }
         }

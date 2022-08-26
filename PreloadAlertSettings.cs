@@ -19,6 +19,11 @@ namespace PreloadAlert
             CorruptedArea = new ToggleNode(true);
             CorruptedTitle = new ToggleNode(true);
             Bestiary = new ToggleNode(true);
+            Expedition = new ToggleNode(true);
+            ExpeditionTujen = new ColorBGRA(255, 242, 255, 255);
+            ExpeditionDannig = new ColorBGRA(255, 222, 13, 255);
+            ExpeditionRog = new ColorBGRA(255, 237, 12, 255);
+            ExpeditionGwennen = new ColorBGRA(255, 32, 219, 255);
             TextSize = new RangeNode<int>(16, 10, 50);
             BackgroundColor = new ColorBGRA(0, 0, 0, 255);
             DefaultTextColor = new ColorBGRA(210, 210, 210, 255);
@@ -239,5 +244,10 @@ namespace PreloadAlert
         public ColorNode UlyssesMorvant { get; set; }
         public ColorNode AurelioVoidsinger { get; set; }
         public ToggleNode Bestiary { get; set; }
+        public ToggleNode Expedition { get; set; }
+        public ColorNode ExpeditionTujen { get; set; }
+        public ColorNode ExpeditionDannig { get; set; }
+        public ColorNode ExpeditionRog { get; set; }
+        public ColorNode ExpeditionGwennen { get; set; }
     }
 }
